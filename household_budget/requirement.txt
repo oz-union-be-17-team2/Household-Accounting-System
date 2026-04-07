@@ -1,4 +1,4 @@
-django
+gidjango
 djangorestframework
 django-cors-headers
 python-dotenv
