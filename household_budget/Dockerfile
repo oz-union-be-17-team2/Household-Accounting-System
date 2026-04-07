@@ -24,4 +24,6 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application", "--workers", "2"]
+COPY ./scripts /scripts
+RUN chmod +x /scripts/run.sh
+CMD ["/scripts/run.sh"]
