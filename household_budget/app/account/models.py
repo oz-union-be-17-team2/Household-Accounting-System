@@ -28,7 +28,7 @@ class Account(TimeStampModel):
         LOAN        = 'LOAN',        '대출'
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='accounts')
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, default='통장')
     number = models.CharField(max_length=20, unique=True)
     type = models.CharField(max_length=20, choices=AccountType.choices)
     bank_code = models.CharField(max_length=3, choices=BankCode.choices)
