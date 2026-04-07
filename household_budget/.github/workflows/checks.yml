@@ -1,5 +1,3 @@
-# .github/workflows/checks.yml
-
 name: Code Quality Checks
 
 on:
@@ -43,19 +41,37 @@ jobs:
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
     - name: Install Packages & Libraries
-      run: uv sync --dev-packages
+      run: |
+        cd household_budget
+        uv sync --all-groups
 
     - name: Run ruff (Linting)
-      run: uv run ruff check .
+      run: |
+        cd household_budget
+        uv run ruff check .
 
     - name: Run Django Migration
       env:
-        DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}
+        DJANGO_SETTINGS_MODULE: config.setting.base
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_HOST: localhost
+        DB_PORT: 5432
       run: |
-        uv run python manage.py makemigrations
+        cd household_budget
         uv run python manage.py migrate
 
     - name: Run Django Tests
       env:
-        DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}
-      run: uv run python manage.py test
+        DJANGO_SETTINGS_MODULE: config.setting.base
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_HOST: localhost
+        DB_PORT: 5432
+      run: |
+        cd household_budget
+        uv run python manage.py test
