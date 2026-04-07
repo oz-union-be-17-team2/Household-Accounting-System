@@ -1,10 +1,9 @@
 from django.conf import settings
 from django.db import models
-
 from household_budget.core.models import TimeStampModel
 
-class Account(TimeStampModel):
 
+class Account(TimeStampModel):
     class BankCode(models.TextChoices):
         KB = "004", "국민은행"
         SHINHAN = "088", "신한은행"
@@ -21,14 +20,14 @@ class Account(TimeStampModel):
         K = "089", "케이뱅크"
 
     class AccountType(models.TextChoices):
-        CHECKING    = 'CHECKING',    '입출금'
-        SAVINGS     = 'SAVINGS',     '적금'
-        DEPOSIT     = 'DEPOSIT',     '예금'
-        OVERDRAFT   = 'OVERDRAFT',   '마이너스'
-        LOAN        = 'LOAN',        '대출'
+        CHECKING = "CHECKING", "입출금"
+        SAVINGS = "SAVINGS", "적금"
+        DEPOSIT = "DEPOSIT", "예금"
+        OVERDRAFT = "OVERDRAFT", "마이너스"
+        LOAN = "LOAN", "대출"
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='accounts')
-    name = models.CharField(max_length=20, default='통장')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="accounts")
+    name = models.CharField(max_length=20, default="통장")
     number = models.CharField(max_length=20, unique=True)
     type = models.CharField(max_length=20, choices=AccountType.choices)
     bank_code = models.CharField(max_length=3, choices=BankCode.choices)
