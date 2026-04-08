@@ -35,8 +35,6 @@ class Account(TimeStampModel):
     is_active = models.BooleanField(default=True)
     balance = models.DecimalField(max_digits=20, decimal_places=0, default=0)
 
-    objects = models.Manager()
-
     class Meta:
         verbose_name = "계좌"
         verbose_name_plural = f"{verbose_name} 목록"
