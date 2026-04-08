@@ -34,6 +34,13 @@ class Account(TimeStampModel):
     bank_code = models.CharField(max_length=3, choices=BankCode.choices)
     is_active = models.BooleanField(default=True)
     balance = models.DecimalField(max_digits=20, decimal_places=0, default=0)
-    daily_transfer_limit = models.DecimalField(max_digits=10, decimal_places=0, default=30_000_000)
-    per_transaction_limit = models.DecimalField(max_digits=10, decimal_places=0, default=30_000_000)
-    monthly_transfer_limit = models.DecimalField(max_digits=10, decimal_places=0, default=1_000_000_000)
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = "계좌"
+        verbose_name_plural = f"{verbose_name} 목록"
+        ordering = ["name", "-updated_at"]
+
+    def __str__(self):
+        return f"{self.user.name} - {self.get_bank_code_display()} {self.number} {self.get_type_display()}"
