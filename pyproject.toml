@@ -27,6 +27,7 @@ prod = [
 line-length = 120
 indent-width = 4
 target-version = "py313"
+exclude = ["*/migrations/*.py"]
 
 [tool.ruff.lint]
 select = [
