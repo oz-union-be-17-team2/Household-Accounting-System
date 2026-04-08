@@ -1,10 +1,19 @@
-from app.account.models import Account
-from core.models import TimeStampModel
-from django.db import models
-from django.conf import settings
+# Troubleshooting - 2026.04.08
 
+
+
+## 코드 수정 % 해석
+- model에서 core에 basemodel(`TimeStempModel`)을 상속받아서 사용
+
+```
 class Transaction(TimeStampModel):
+    # core에서 basemodel을 상속받아
+    # updated_at과 created_at을 사용
     class TransactionType(models.TextChoices):
+        # TextChoices에서 첫 번째 인자는 DB에 저장되는 값
+        # 두 번째 인자는 라벨(표시용 텍스트)
+        # 만약 그냥 문자열로 저장하면 오타가 들어와도 DB에 그대로 저장
+        # TextChoices를 쓰면 지정 된 값에서 선택 가능
         DEPOSIT = 'DEPOSIT', '입금'
         WITHDRAWAL = 'WITHDRAWAL', '출금'
         TRANSFER = 'TRANSFER', '이체'
@@ -34,3 +43,4 @@ class Transaction(TimeStampModel):
         max_length=20,
         choices=Status.choices,
         default=Status.PENDING)
+```
