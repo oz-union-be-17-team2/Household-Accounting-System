@@ -11,7 +11,17 @@
       "Bash(git -C /Users/admin/Desktop/Household-Accounting-System ls-files --cached)",
       "Bash(git -C /Users/admin/Desktop/Household-Accounting-System ls-files --cached .env)",
       "Bash(git -C /Users/admin/Desktop/Household-Accounting-System log --all --full-history -- .env household_budget/.env)",
-      "Bash(git -C /Users/admin/Desktop/Household-Accounting-System show ad46cd3f37c00f56e59c2c90bf8b03168fe32b69:household_budget/.env)"
+      "Bash(git -C /Users/admin/Desktop/Household-Accounting-System show ad46cd3f37c00f56e59c2c90bf8b03168fe32b69:household_budget/.env)",
+      "Bash(git -C /Users/admin/Desktop/Household-Accounting-System diff --name-only --diff-filter=U)",
+      "Bash(git -C /Users/admin/Desktop/Household-Accounting-System status --short)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)",
+      "Bash(git -C /Users/admin/Desktop/Household-Accounting-System rm --cached household_budget/.idea/.gitignore)",
+      "Bash(git -C /Users/admin/Desktop/Household-Accounting-System add app/transaction/serializers.py)",
+      "Bash(git -C /Users/admin/Desktop/Household-Accounting-System add app/user/models.py app/transaction/models.py app/notification/models.py)",
+      "Bash(.venv/bin/ruff check:*)",
+      "Bash(.venv/bin/ruff format:*)",
+      "Bash(git -C /Users/admin/Desktop/Household-Accounting-System add -u)"
     ]
   }
 }
