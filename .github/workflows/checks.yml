@@ -43,36 +43,32 @@ jobs:
 
     - name: Install Packages & Libraries
       run: |
-        cd household_budget
         uv sync --all-groups
 
     - name: Run ruff (Linting)
       run: |
-        cd household_budget
         uv run ruff check .
 
     - name: Run Django Migration
       env:
         DJANGO_SETTINGS_MODULE: config.setting.base
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_NAME: ${{ secrets.DB_NAME }}
+        POSTGRES_USER: ${{ secrets.DB_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        POSTGRES_DB: ${{ secrets.DB_NAME }}
         DB_HOST: localhost
         DB_PORT: 5432
       run: |
-        cd household_budget
         uv run python manage.py migrate
 
     - name: Run Django Tests
       env:
         DJANGO_SETTINGS_MODULE: config.setting.base
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        DB_NAME: ${{ secrets.DB_NAME }}
+        POSTGRES_USER: ${{ secrets.DB_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        POSTGRES_DB: ${{ secrets.DB_NAME }}
         DB_HOST: localhost
         DB_PORT: 5432
       run: |
-        cd household_budget
         uv run python manage.py test

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
-from household_budget.core.models import TimeStampModel
+
+from core.models import TimeStampModel
 
 
 class Account(TimeStampModel):

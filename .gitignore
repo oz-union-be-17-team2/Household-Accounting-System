@@ -319,7 +319,6 @@ pyrightconfig.json
 
 # uv
 .venv/
-uv.lock
 
 # 환경변수
 .env.dev
