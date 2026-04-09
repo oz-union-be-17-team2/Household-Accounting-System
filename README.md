@@ -77,11 +77,12 @@ erDiagram
         boolean is_superuser
         datetime last_login
         datetime created_at
-        varchar name
         varchar nickname
-        varchar phone_number
         boolean is_deleted
         datetime updated_at
+        varchar gender
+        int age
+        varchar job
     }
 
     ACCOUNT {
