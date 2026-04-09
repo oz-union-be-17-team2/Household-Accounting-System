@@ -40,9 +40,9 @@ class CustomUser(TimeStampModel, AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     nickname = models.CharField(max_length=20, unique=True)
 
-    gender = models.CharField(max_length=1, choices=Gender.choices, blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=Gender.choices, blank=True, default="")
     age = models.PositiveIntegerField(blank=True, null=True)
-    job = models.CharField(max_length=20, choices=Job.choices, blank=True, null=True)
+    job = models.CharField(max_length=20, choices=Job.choices, blank=True, default="")
 
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -51,7 +51,7 @@ class CustomUser(TimeStampModel, AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["nickname"]
 
     class Meta:
         verbose_name = "유저"

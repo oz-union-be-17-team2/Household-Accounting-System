@@ -41,4 +41,4 @@ class Account(TimeStampModel):
         ordering = ["name", "-updated_at"]
 
     def __str__(self):
-        return f"{self.user.name} - {self.get_bank_code_display()} {self.number} {self.get_type_display()}"
+        return f"{self.user.nickname} - {self.get_bank_code_display()} {self.number} {self.get_type_display()}"
