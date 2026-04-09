@@ -49,3 +49,7 @@ fixable = ["ALL"]  # 모든 수정 가능한 문제 자동 수정
 
 [tool.ruff.format]
 quote-style = "double"  # black과 일치
+
+[tool.pytest.ini_options] #pytest를 위한 추가
+DJANGO_SETTINGS_MODULE = "config.setting.base"
+python_files = ["test_*.py", "tests.py"]
