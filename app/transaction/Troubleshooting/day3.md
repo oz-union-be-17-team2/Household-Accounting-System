@@ -32,3 +32,23 @@ def perform_create(self, serializer):
 def perform_create(self, serializer):
     serializer.save(user=self.request.user)
 ```
+
+---
+## select_related()를 사용한 N+1 문제 해결
+
+### N+1 문제란?
+- 거래내역 100개 조회 시 account에 접근할 때마다 DB 쿼리가 100번 추가 발생 (총 101번)
+- 데이터가 많아질수록 DB 쿼리가 늘어나 성능 저하 발생
+
+### select_related() 사용 이유
+- Transaction(N) -> Account(1) 관계에서 select_related()로 JOIN해서 가져와 N+1 문제 해결
+- select_related() 없이 필터링만 하면 account 접근 시마다 DB에서 조회 (N+1 문제 발생)
+- select_related()로 account를 미리 JOIN해서 메모리에 올려두면 account 접근 시 DB 쿼리 없이 메모리에서 찾음 (총 1번)
+
+```python
+# select_related() 사용 전 (N+1 문제 발생)
+Transaction.objects.filter(user=self.request.user)
+
+# select_related() 사용 후 (N+1 문제 해결)
+Transaction.objects.filter(user=self.request.user).select_related('account')
+```

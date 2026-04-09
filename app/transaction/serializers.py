@@ -6,5 +6,5 @@ from .models import Transaction
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = "__all__"
+        fields = ["id", "account", "transaction_type", "amount", "description", "created_at", "updated_at"]
         read_only_fields = ["user", "created_at", "updated_at"]
