@@ -57,6 +57,8 @@ DB와 Django 서버 모두 컨테이너로 실행합니다.
 docker compose -f docker-compose.dev.yml up --build
 ```
 
+> 코드 변경 시 `--build`를 붙여서 이미지를 다시 빌드해야 반영됩니다.
+
 종료
 ```bash
 docker compose -f docker-compose.dev.yml down
