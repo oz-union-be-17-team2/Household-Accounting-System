@@ -25,4 +25,5 @@ urlpatterns = [
     path("account/", include("app.account.urls")),
     # auth
     path("register/", views.RegisterView.as_view(), name="register"),
+    path("transaction/", include("app.transaction.urls")),
 ]
