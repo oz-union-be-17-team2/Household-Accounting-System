@@ -23,7 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data["password"] != data["password2"]:
-            raise serializers.ValidationError({"password": "비밀번호가 일치하지 않습니다."})
+            raise serializers.ValidationError({"password":"비밀번호가 일치하지 않습니다."})
         return data
 
     def create(self, validated_data):
