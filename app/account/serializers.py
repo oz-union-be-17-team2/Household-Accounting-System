@@ -53,6 +53,7 @@ class AccountDetailSerializer(serializers.ModelSerializer):
             "number",
             "type",
             "bank_code",
+            "balance",
             "updated_at",
             "created_at",
         ]
