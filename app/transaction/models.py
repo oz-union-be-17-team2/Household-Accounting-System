@@ -16,7 +16,7 @@ class Transaction(TimeStampModel):
     # 역할 : 해당 유저의 계좌에서 계좌를 받기 위해서
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     # 역할 : 거래내역의 해당거래 금액
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True)
     # 역할 : 거래내역에서 사용자의 비고 사항을 작성하기 위해
     transaction_type = models.CharField(max_length=20, choices=TransactionType.choices)
 
