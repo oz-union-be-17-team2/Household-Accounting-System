@@ -5,13 +5,16 @@ from core.models import TimeStampModel
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, nickname, password=None):
+    def create_user(self, email, nickname, password=None, gender=None, age=None, job=None):
         if not email:
             raise ValueError("올바른 이메일을 입력해주세요.")
         email = self.normalize_email(email)
         user = self.model(
             email=email,
             nickname=nickname,
+            gender=gender,
+            age=age,
+            job=job,
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -21,6 +24,7 @@ class CustomUserManager(BaseUserManager):
         user = self.create_user(email, nickname, password)
         user.is_staff = True
         user.is_superuser = True
+        user.is_active = True
         user.save(using=self._db)
         return user
 
