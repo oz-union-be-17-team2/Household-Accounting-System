@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from app.account.selectors import get_account_detail
@@ -9,7 +10,16 @@ User = get_user_model()
 def create_account(*, user: User, data):
     serializer = AccountListCreateSerializer(data=data)
     serializer.is_valid(raise_exception=True)
-    serializer.save(user=user)
+    if settings.DEBUG:
+        serializer.save(user=User.objects.first())
+    else:
+        serializer.save(user=user)
+    return serializer.data
+
+
+def retrieve_account(*, user: User, account_pk: int):
+    account = get_account_detail(user=user, account_pk=account_pk)
+    serializer = AccountDetailSerializer(account, many=False)
     return serializer.data
 
 
@@ -19,11 +29,6 @@ def update_account(*, user: User, data, account_pk: int):
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return serializer.data
-
-
-def retrieve_account(*, user: User, account_pk: int):
-    account = get_account_detail(user=user, account_pk=account_pk)
-    return AccountDetailSerializer(account, many=False)
 
 
 def delete_account(*, user: User, account_pk: int) -> None:
