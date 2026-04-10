@@ -48,7 +48,7 @@ class CustomUser(TimeStampModel, AbstractBaseUser, PermissionsMixin):
     age = models.PositiveIntegerField(blank=True, null=True)
     job = models.CharField(max_length=20, choices=Job.choices, blank=True, default="")
 
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_delete = models.BooleanField(default=False)
 
