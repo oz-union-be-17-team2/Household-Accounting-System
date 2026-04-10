@@ -127,6 +127,7 @@ jobs:
             docker run -d \
               --name household_container \
               -p 8000:8000 \
+              -v /home/ubuntu/staticfiles:/app/staticfiles \
               --env-file ~/household-accounting/.env \
               --restart unless-stopped \
               $DOCKER_USERNAME/household-accounting:latest
