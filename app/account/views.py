@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -10,7 +11,8 @@ from app.account.services import create_account, delete_account, retrieve_accoun
 
 
 class AccountListCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
 
     def get(self, request):
         account_list = get_account_list(user=request.user)
@@ -25,11 +27,12 @@ class AccountListCreateAPIView(APIView):
 
 
 class AccountDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
 
     def get(self, request, account_pk):
-        serializer = retrieve_account(user=request.user, account_pk=account_pk)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = retrieve_account(user=request.user, account_pk=account_pk)
+        return Response(data, status=status.HTTP_200_OK)
 
     def patch(self, request, account_pk):
         data = update_account(user=request.user, data=request.data, account_pk=account_pk)

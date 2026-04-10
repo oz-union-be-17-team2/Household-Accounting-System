@@ -13,17 +13,18 @@ def create_account(*, user: User, data):
     return serializer.data
 
 
+def retrieve_account(*, user: User, account_pk: int):
+    account = get_account_detail(user=user, account_pk=account_pk)
+    serializer = AccountDetailSerializer(account, many=False)
+    return serializer.data
+
+
 def update_account(*, user: User, data, account_pk: int):
     account = get_account_detail(user=user, account_pk=account_pk)
     serializer = AccountDetailSerializer(account, data=data, partial=True)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return serializer.data
-
-
-def retrieve_account(*, user: User, account_pk: int):
-    account = get_account_detail(user=user, account_pk=account_pk)
-    return AccountDetailSerializer(account, many=False)
 
 
 def delete_account(*, user: User, account_pk: int) -> None:
