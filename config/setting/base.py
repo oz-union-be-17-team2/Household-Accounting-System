@@ -114,6 +114,7 @@ LOCAL_APPS = [
     "app.account",
     "app.transaction",
     "app.notification",
+    "app.analysis",
 ]
 
 THIRD_PARTY_APPS = [

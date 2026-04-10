@@ -1,10 +1,10 @@
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
+from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
 from rest_framework.views import APIView
 
-from app.user.serializers import LoginSerializer, RegisterSerializer
+from app.user.serializers import LoginSerializer, RegisterSerializer, UserUpdateSerializer
 from app.user.services import login, logout, token_refresh
 
 
@@ -58,3 +58,23 @@ class TokenRefreshView(APIView):
         response = Response({"message": "토큰 재발급 성공"}, status=HTTP_200_OK)
         response.set_cookie("access_token", token["access_token"], httponly=True)
         return response
+
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserUpdateSerializer(request.user)
+        return Response(serializer.data, status=HTTP_200_OK)
+
+    def patch(self, request):
+        serializer = UserUpdateSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        request.user.is_delete = True
+        request.user.save()
+        return Response({"message": "Deleted successfully"}, status=HTTP_204_NO_CONTENT)

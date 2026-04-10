@@ -29,9 +29,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data["email"],
             nickname=validated_data["nickname"],
             password=validated_data["password"],
-            gender=validated_data.get("gender"),
+            gender=validated_data.get("gender", ""),
             age=validated_data.get("age"),
-            job=validated_data.get("job"),
+            job=validated_data.get("job", ""),
         )
         return user
 
@@ -39,3 +39,18 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True, write_only=True)
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ("nickname", "gender", "age", "job")
+        extra_kwargs = {
+            "nickname": {"required": False},
+        }
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ("email", "nickname", "gender", "age", "job")
