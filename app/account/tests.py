@@ -290,7 +290,7 @@ def test_views_get_account_detail_unauthenticated(client, account):
 @pytest.mark.django_db
 def test_views_get_account_detail_other_user(client, account):
     """다른 유저의 계좌 단건 조회 시도"""
-    other_user = User.objects.create_user(email="other@test.com", nickname="other")
+    other_user = User.objects.create_user(email="other@test.com", nickname="other", gender="", job="")
     client.force_authenticate(user=other_user)
     url = reverse("account:detail", kwargs={"account_pk": account.pk})
     response = client.get(url)
@@ -343,7 +343,7 @@ def test_views_patch_account_unauthenticated(client, account):
 @pytest.mark.django_db
 def test_views_patch_account_other_user(client, account):
     """다른 유저의 계좌 수정 시도"""
-    other_user = User.objects.create_user(email="other@test.com", nickname="other")
+    other_user = User.objects.create_user(email="other@test.com", nickname="other", gender="", job="")
     client.force_authenticate(user=other_user)
     url = reverse("account:detail", kwargs={"account_pk": account.pk})
     response = client.patch(url, data={"name": "수정된 통장"}, format="json")
@@ -386,7 +386,7 @@ def test_views_delete_account_unauthenticated(client, account):
 @pytest.mark.django_db
 def test_views_delete_account_other_user(client, account):
     """다른 유저의 계좌 삭제 시도"""
-    other_user = User.objects.create_user(email="other@test.com", nickname="other")
+    other_user = User.objects.create_user(email="other@test.com", nickname="other", gender="", job="")
     client.force_authenticate(user=other_user)
     url = reverse("account:detail", kwargs={"account_pk": account.pk})
     response = client.delete(url)
