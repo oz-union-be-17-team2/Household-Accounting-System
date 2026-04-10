@@ -1,1 +1,32 @@
-# 비지니스로직 구성을 위해 임시로 제작 추후 생성시 알림기능을 위해서 남겨두기
+from django.contrib.auth import get_user_model
+
+from app.account.selectors import get_account_detail
+from app.account.serializers import AccountDetailSerializer, AccountListCreateSerializer
+
+User = get_user_model()
+
+
+def create_account(*, user: User, data):
+    serializer = AccountListCreateSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(user=user)
+    return serializer.data
+
+
+def update_account(*, user: User, data, account_pk: int):
+    account = get_account_detail(user=user, account_pk=account_pk)
+    serializer = AccountDetailSerializer(account, data=data, partial=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return serializer.data
+
+
+def retrieve_account(*, user: User, account_pk: int):
+    account = get_account_detail(user=user, account_pk=account_pk)
+    return AccountDetailSerializer(account, many=False)
+
+
+def delete_account(*, user: User, account_pk: int) -> None:
+    account = get_account_detail(user=user, account_pk=account_pk)
+    account.delete()
+    return None
