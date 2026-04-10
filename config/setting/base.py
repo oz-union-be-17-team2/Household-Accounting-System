@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -94,9 +95,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Seoul"
 
 USE_I18N = True
 
@@ -127,6 +128,8 @@ THIRD_PARTY_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "debug_toolbar",
+    "django_celery_beat",
+    "django_celery_results",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -160,18 +163,17 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 INTERNAL_IPS = ["127.0.0.1"]
 
-# Swagger UI 설정
-SPECTACULAR_SETTINGS = {
-    "TITLE": "Household Budget API",
-    "DESCRIPTION": "가계부 서비스 API 문서",
-    "VERSION": "1.0.0",
-    "SECURITY": [{"BearerAuth": []}],
-    "COMPONENTS": {
-        "securitySchemes": {
-            "BearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-            }
-        }
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+CELERY_BEAT_SCHEDULE = {
+    "analyze-weekly": {
+        "task": "app.analysis.tasks.analyze_weekly_task",
+        "schedule": crontab(hour=0, minute=0, day_of_week=1),
+    },
+    "analyze-monthly": {
+        "task": "app.analysis.tasks.analyze_monthly_task",
+        "schedule": crontab(hour=0, minute=0, day_of_month=1),
     },
 }
