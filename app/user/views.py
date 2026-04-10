@@ -76,4 +76,5 @@ class UserProfileView(APIView):
 
     def delete(self, request):
         request.user.is_delete = True
+        request.user.save()
         return Response({"message": "Deleted successfully"}, status=HTTP_204_NO_CONTENT)

@@ -15,3 +15,9 @@ PUT vs PATCH
 권한 제한
 - permission_classes = [IsAuthenticated]로 로그인한 유저만 접근 가능
 - request.user로 현재 로그인한 유저만 조회/수정/삭제됨
+
+새롭게 알게 된 점
+- app/user/serializers.py
+  - create() 에서 선택 필드(gender, job) None 대신 `""` 반환하도록 수정
+  - validated_data.get("gender") → validated_data.get("gender", "")
+  - NOT NULL 제약 조건 위반 방지
