@@ -27,6 +27,7 @@ class LoginView(APIView):
         if tokens is None:
             return Response(
                 {"message": "이메일 또는 비밀번호가 올바르지 않습니다."},
+                status=HTTP_401_UNAUTHORIZED,
             )
 
         response = Response({"message": "로그인 되었습니다"}, status=HTTP_200_OK)

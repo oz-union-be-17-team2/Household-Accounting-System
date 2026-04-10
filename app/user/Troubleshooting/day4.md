@@ -21,3 +21,6 @@ PUT vs PATCH
   - create() 에서 선택 필드(gender, job) None 대신 `""` 반환하도록 수정
   - validated_data.get("gender") → validated_data.get("gender", "")
   - NOT NULL 제약 조건 위반 방지
+
+-소프트 딜리트는 DB에서 row를 지우는 게 아니라 is_delete=True로 변경하는것.
+변경사항을 DB에 저장해야 하니까 save() 필요. -> `request.user.save()` 추가
