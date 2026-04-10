@@ -156,3 +156,19 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 INTERNAL_IPS = ["127.0.0.1"]
+
+# Swagger UI 설정
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Household Budget API",
+    "DESCRIPTION": "가계부 서비스 API 문서",
+    "VERSION": "1.0.0",
+    "SECURITY": [{"BearerAuth": []}],
+    "COMPONENTS": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+            }
+        }
+    },
+}
