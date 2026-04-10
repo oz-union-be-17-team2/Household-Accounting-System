@@ -125,7 +125,10 @@ THIRD_PARTY_APPS = [
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "app.user.authentication.CookieJWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
 }
@@ -138,3 +141,11 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "user.CustomUser"
+
+# 이메일 인증
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
