@@ -1,5 +1,7 @@
+from django.conf import settings
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -8,6 +10,9 @@ from app.notification.services import delete_notification, get_notification_list
 
 
 class NotificationListAPIView(APIView):
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
+
     @extend_schema(
         summary="알림 목록 조회",
         description="알림 목록을 조회합니다.",
@@ -20,6 +25,9 @@ class NotificationListAPIView(APIView):
 
 
 class NotificationDetailAPIView(APIView):
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
+
     @extend_schema(
         summary="알림 디테일 조회",
         description="알림 조회 및 읽은 표시",
