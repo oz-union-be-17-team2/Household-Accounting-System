@@ -9,7 +9,6 @@ from rest_framework.views import APIView
 
 from app.account.selectors import get_account_detail, get_account_list
 from app.account.serializers import AccountCreateSerializer, AccountDetailSerializer, AccountListSerializer
-from app.account.services import delete_account
 
 User = get_user_model()
 
@@ -81,5 +80,6 @@ class AccountDetailAPIView(APIView):
         responses={204: None},
     )
     def delete(self, request, account_pk):
-        delete_account(user=request.user, account_pk=account_pk)
+        account = get_account_detail(user=request.user, account_pk=account_pk)
+        account.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

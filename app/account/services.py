@@ -1,11 +1,1 @@
-from django.contrib.auth import get_user_model
-
-from app.account.selectors import get_account_detail
-
-User = get_user_model()
-
-
-def delete_account(*, user: User, account_pk: int) -> None:
-    account = get_account_detail(user=user, account_pk=account_pk)
-    account.delete()
-    return None
+# 비즈니스 로직 구성을 위해 임시로 제작

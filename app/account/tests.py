@@ -6,7 +6,6 @@ from django.urls import reverse
 from app.account.exceptions import AccountNotFoundError
 from app.account.models import Account
 from app.account.selectors import get_account_detail, get_account_list
-from app.account.services import delete_account
 
 User = get_user_model()
 
@@ -125,19 +124,6 @@ def test_selectors_get_account_list_empty(user):
 
 
 # Services
-@pytest.mark.django_db
-def test_services_delete_account_success(user, account):
-    """계좌 삭제 서비스 성공"""
-    delete_account(user=user, account_pk=account.pk)
-
-    assert Account.objects.filter(pk=account.pk).exists() is False
-
-
-@pytest.mark.django_db
-def test_services_delete_account_not_found(user):
-    """존재하지 않는 계좌 삭제 시 예외 발생"""
-    with pytest.raises(AccountNotFoundError):
-        delete_account(user=user, account_pk=99999)
 
 
 # Views - GET /account/ 목록 조회
