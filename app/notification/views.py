@@ -16,7 +16,6 @@ class NotificationListAPIView(APIView):
     @extend_schema(
         summary="알림 목록 조회",
         description="알림 목록을 조회합니다.",
-        request=NotificationSerializer,
         responses={200: NotificationSerializer},
     )
     def get(self, request):
@@ -31,7 +30,6 @@ class NotificationDetailAPIView(APIView):
     @extend_schema(
         summary="알림 디테일 조회",
         description="알림 조회 및 읽은 표시",
-        request=NotificationSerializer,
         responses={200: NotificationSerializer},
     )
     def get(self, request, noti_pk):
@@ -41,9 +39,8 @@ class NotificationDetailAPIView(APIView):
     @extend_schema(
         summary="알림 디테일 삭제",
         description="조회한 알림 수동 삭제",
-        request=NotificationSerializer,
-        responses={204: NotificationSerializer},
+        responses={204: None},
     )
     def delete(self, request, noti_pk):
         delete_notification(user=request.user, noti_pk=noti_pk)
-        return Response({"message": "알림이 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)

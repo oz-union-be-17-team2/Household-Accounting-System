@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.db import models
 
+from core.models import SoftDeleteModel
 
-class Notification(models.Model):
+
+class Notification(SoftDeleteModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")
     message = models.TextField()
     is_read = models.BooleanField(default=False)
