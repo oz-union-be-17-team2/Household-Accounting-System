@@ -176,4 +176,8 @@ CELERY_BEAT_SCHEDULE = {
         "task": "app.analysis.tasks.analyze_monthly_task",
         "schedule": crontab(hour=0, minute=0, day_of_month=1),
     },
+    "hard-delete-old-notification": {
+        "task": "app.notification.tasks.hard_delete_old_notification_task",
+        "schedule": crontab(hour=0, minute=0),
+    },
 }

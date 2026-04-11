@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from app.notification.models import Notification
 
@@ -14,3 +17,7 @@ def mark_notification_as_read(notification: Notification) -> Notification:
 def delete_notification(notification: Notification):
     notification.delete()
     return None
+
+
+def hard_delete_old_notification(*, days: int = 30):
+    Notification.all_objects.filter(deleted_at__lt=timezone.now() - timedelta(days=days)).hard_delete()
