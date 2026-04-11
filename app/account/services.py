@@ -2,13 +2,13 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from app.account.selectors import get_account_detail
-from app.account.serializers import AccountDetailSerializer, AccountListCreateSerializer
+from app.account.serializers import AccountCreateSerializer, AccountDetailSerializer
 
 User = get_user_model()
 
 
 def create_account(*, user: User, data):
-    serializer = AccountListCreateSerializer(data=data)
+    serializer = AccountCreateSerializer(data=data)
     serializer.is_valid(raise_exception=True)
     if settings.DEBUG:
         serializer.save(user=User.objects.first())
