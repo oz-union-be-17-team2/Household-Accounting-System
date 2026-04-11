@@ -46,4 +46,4 @@ class AccountDetailAPIView(APIView):
     @extend_schema(responses={204: {"type": "object", "properties": {"message": {"type": "string"}}}})
     def delete(self, request, account_pk):
         delete_account(user=request.user, account_pk=account_pk)
-        return Response({"message": "계좌가 삭제되었습니다."}, status=status.HTTP_200_OK)
+        return Response({"message": "계좌가 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
