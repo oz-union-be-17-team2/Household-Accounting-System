@@ -1,3 +1,4 @@
+from django.conf import settings
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -51,8 +52,12 @@ class LoginView(APIView):
             )
 
         response = Response({"message": "로그인 되었습니다"}, status=HTTP_200_OK)
-        response.set_cookie("access_token", tokens["access_token"], httponly=True)
-        response.set_cookie("refresh_token", tokens["refresh_token"], httponly=True)
+        response.set_cookie(
+            "access_token", tokens["access_token"], httponly=True, secure=not settings.DEBUG, samesite="Lax"
+        )
+        response.set_cookie(
+            "refresh_token", tokens["refresh_token"], httponly=True, secure=not settings.DEBUG, samesite="Lax"
+        )
         return response
 
 
@@ -93,7 +98,9 @@ class TokenRefreshView(APIView):
             return Response({"message": "Refresh Token이 없습니다."}, status=HTTP_401_UNAUTHORIZED)
 
         response = Response({"message": "토큰 재발급 성공"}, status=HTTP_200_OK)
-        response.set_cookie("access_token", token["access_token"], httponly=True)
+        response.set_cookie(
+            "access_token", token["access_token"], httponly=True, secure=not settings.DEBUG, samesite="Lax"
+        )
         return response
 
 
