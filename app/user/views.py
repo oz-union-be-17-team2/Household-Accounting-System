@@ -3,7 +3,6 @@ from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED
 from rest_framework.views import APIView
 
 from app.user.serializers import LoginSerializer, RegisterSerializer, UserProfileSerializer, UserUpdateSerializer
@@ -42,16 +41,16 @@ class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         tokens = login(serializer.validated_data["email"], serializer.validated_data["password"])
         if tokens is None:
             return Response(
                 {"message": "이메일 또는 비밀번호가 올바르지 않습니다."},
-                status=HTTP_401_UNAUTHORIZED,
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        response = Response({"message": "로그인 되었습니다"}, status=HTTP_200_OK)
+        response = Response({"message": "로그인 되었습니다"}, status=status.HTTP_200_OK)
         response.set_cookie(
             "access_token", tokens["access_token"], httponly=True, secure=not settings.DEBUG, samesite="Lax"
         )
@@ -76,7 +75,7 @@ class LogoutView(APIView):
         refresh_token = request.COOKIES.get("refresh_token")
         logout(refresh_token)
 
-        response = Response({"message": "로그아웃 되었습니다"}, status=HTTP_200_OK)
+        response = Response({"message": "로그아웃 되었습니다"}, status=status.HTTP_200_OK)
         response.delete_cookie("access_token")
         response.delete_cookie("refresh_token")
         return response
@@ -95,9 +94,9 @@ class TokenRefreshView(APIView):
         refresh_token = request.COOKIES.get("refresh_token")
         token = token_refresh(refresh_token)
         if token is None:
-            return Response({"message": "Refresh Token이 없습니다."}, status=HTTP_401_UNAUTHORIZED)
+            return Response({"message": "Refresh Token이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        response = Response({"message": "토큰 재발급 성공"}, status=HTTP_200_OK)
+        response = Response({"message": "토큰 재발급 성공"}, status=status.HTTP_200_OK)
         response.set_cookie(
             "access_token", token["access_token"], httponly=True, secure=not settings.DEBUG, samesite="Lax"
         )
@@ -116,8 +115,8 @@ class UserProfileView(APIView):
         },
     )
     def get(self, request):
-        serializer = UserUpdateSerializer(request.user)
-        return Response(serializer.data, status=HTTP_200_OK)
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(
         summary="프로필 수정",
@@ -133,8 +132,8 @@ class UserProfileView(APIView):
         serializer = UserUpdateSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=HTTP_200_OK)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
         summary="회원 탈퇴",
@@ -147,4 +146,4 @@ class UserProfileView(APIView):
     def delete(self, request):
         request.user.is_delete = True
         request.user.save()
-        return Response({"message": "Deleted successfully"}, status=HTTP_204_NO_CONTENT)
+        return Response({"message": "Deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
