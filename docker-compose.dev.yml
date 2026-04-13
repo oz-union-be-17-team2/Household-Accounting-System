@@ -36,7 +36,7 @@ services:
 
   celery-worker:
     build: .
-    command: celery -A config worker --loglevel=info
+    command: uv run celery -A config worker --loglevel=info
     env_file:
       - .env
     depends_on:
@@ -45,7 +45,7 @@ services:
 
   celery-beat:
     build: .
-    command: celery -A config beat --loglevel=info
+    command: uv run celery -A config beat --loglevel=info
     env_file:
       - .env
     depends_on:
