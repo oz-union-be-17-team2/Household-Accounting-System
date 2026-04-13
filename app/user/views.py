@@ -1,4 +1,3 @@
-from django.conf import settings
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -55,7 +54,7 @@ class LoginView(APIView):
             "access_token",
             tokens["access_token"],
             httponly=True,
-            secure=not settings.DEBUG,
+            secure=False,
             samesite="Lax",
             max_age=60 * 30,
         )
@@ -63,7 +62,7 @@ class LoginView(APIView):
             "refresh_token",
             tokens["refresh_token"],
             httponly=True,
-            secure=not settings.DEBUG,
+            secure=False,
             samesite="Lax",
             max_age=60 * 60 * 24,
         )
@@ -112,7 +111,7 @@ class TokenRefreshView(APIView):
             "access_token",
             token["access_token"],
             httponly=True,
-            secure=not settings.DEBUG,
+            secure=False,
             samesite="Lax",
             max_age=60 * 30,
         )
