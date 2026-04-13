@@ -10,6 +10,7 @@ class Analysis(TimeStampModel):
         MONTHLY = "MONTHLY", "월간"
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    about = models.CharField(max_length=50)
     analysis_type = models.CharField(max_length=10, choices=AnalysisType.choices)
     period_start = models.DateField()
     period_end = models.DateField()

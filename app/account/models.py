@@ -42,3 +42,18 @@ class Account(TimeStampModel):
 
     def __str__(self):
         return f"{self.user.nickname} - {self.get_bank_code_display()} {self.number} {self.get_account_type_display()}"
+
+
+class BalanceAlert(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="balance_alerts")
+    threshold = models.DecimalField(max_digits=20, decimal_places=0, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "잔액 알림"
+        verbose_name_plural = f"{verbose_name} 목록"
+        ordering = ["-created_at"]
+        unique_together = ["account", "threshold"]
+
+    def __str__(self):
+        return f"{self.account.user.nickname}님의 {self.threshold}원 알림"

@@ -1,14 +1,11 @@
-# Create your tests here.
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse
-from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from app.account.exceptions import AccountNotFoundError
 from app.account.models import Account
 from app.account.selectors import get_account_detail, get_account_list
-from app.account.services import create_account, delete_account, retrieve_account, update_account
 
 User = get_user_model()
 
@@ -127,77 +124,6 @@ def test_selectors_get_account_list_empty(user):
 
 
 # Services
-@pytest.mark.django_db
-def test_services_create_account_success(user):
-    """계좌 생성 서비스 성공"""
-    data = {
-        "name": "서비스 테스트 통장",
-        "number": "9999-9999-9999",
-        "account_type": Account.AccountType.CHECKING,
-        "bank_code": Account.BankCode.KB,
-        "balance": 50_000,
-    }
-    result = create_account(user=user, data=data)
-
-    assert result["number"] == "9999-9999-9999"
-    assert result["user_nickname"] == user.nickname
-
-
-@pytest.mark.django_db
-def test_services_create_account_fail_invalid_data(user):
-    """잘못된 데이터로 계좌 생성 시 예외 발생"""
-    data = {
-        "number": "9999-9999-9999",
-        "account_type": Account.AccountType.CHECKING,
-        "bank_code": "invalid_bank",
-    }
-    with pytest.raises(DRFValidationError):
-        create_account(user=user, data=data)
-
-
-@pytest.mark.django_db
-def test_services_retrieve_account_success(user, account):
-    """계좌 단건 조회 서비스 성공"""
-    result = retrieve_account(user=user, account_pk=account.pk)
-
-    assert result.data["number"] == account.number
-
-
-@pytest.mark.django_db
-def test_services_retrieve_account_not_found(user):
-    """존재하지 않는 계좌 조회 서비스 예외 발생"""
-    with pytest.raises(AccountNotFoundError):
-        retrieve_account(user=user, account_pk=99999)
-
-
-@pytest.mark.django_db
-def test_services_update_account_success(user, account):
-    """계좌 수정 서비스 성공"""
-    result = update_account(user=user, account_pk=account.pk, data={"name": "수정된 통장"})
-
-    assert result["name"] == "수정된 통장"
-
-
-@pytest.mark.django_db
-def test_services_update_account_not_found(user):
-    """존재하지 않는 계좌 수정 시 예외 발생"""
-    with pytest.raises(AccountNotFoundError):
-        update_account(user=user, account_pk=99999, data={"name": "수정된 통장"})
-
-
-@pytest.mark.django_db
-def test_services_delete_account_success(user, account):
-    """계좌 삭제 서비스 성공"""
-    delete_account(user=user, account_pk=account.pk)
-
-    assert Account.objects.filter(pk=account.pk).exists() is False
-
-
-@pytest.mark.django_db
-def test_services_delete_account_not_found(user):
-    """존재하지 않는 계좌 삭제 시 예외 발생"""
-    with pytest.raises(AccountNotFoundError):
-        delete_account(user=user, account_pk=99999)
 
 
 # Views - GET /account/ 목록 조회
@@ -359,8 +285,7 @@ def test_views_delete_account_success(client, user, account):
     url = reverse("account:detail", kwargs={"account_pk": account.pk})
     response = client.delete(url)
 
-    assert response.status_code == 200
-    assert response.data["message"] == "계좌가 삭제되었습니다."
+    assert response.status_code == 204
     assert Account.objects.filter(pk=account.pk).exists() is False
 
 

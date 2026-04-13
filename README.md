@@ -147,3 +147,11 @@ flowchart TD
     A[로그아웃 요청] --> B[Refresh Token 블랙리스트 추가]
     B --> C[쿠키 삭제 후 200 반환]
 ```
+
+## Celery 스케줄링 작업 결과
+
+### Beat (스케줄러)
+![celery beat](docs/images/celery_beat.png)
+
+### Worker (실행 결과)
+![celery worker](docs/images/celery_worker.png)
