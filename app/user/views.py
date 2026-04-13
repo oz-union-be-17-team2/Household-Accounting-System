@@ -52,10 +52,20 @@ class LoginView(APIView):
 
         response = Response({"message": "로그인 되었습니다"}, status=status.HTTP_200_OK)
         response.set_cookie(
-            "access_token", tokens["access_token"], httponly=True, secure=not settings.DEBUG, samesite="Lax"
+            "access_token",
+            tokens["access_token"],
+            httponly=True,
+            secure=not settings.DEBUG,
+            samesite="Lax",
+            max_age=60 * 30,
         )
         response.set_cookie(
-            "refresh_token", tokens["refresh_token"], httponly=True, secure=not settings.DEBUG, samesite="Lax"
+            "refresh_token",
+            tokens["refresh_token"],
+            httponly=True,
+            secure=not settings.DEBUG,
+            samesite="Lax",
+            max_age=60 * 60 * 24,
         )
         return response
 
@@ -99,7 +109,12 @@ class TokenRefreshView(APIView):
 
         response = Response({"message": "토큰 재발급 성공"}, status=status.HTTP_200_OK)
         response.set_cookie(
-            "access_token", token["access_token"], httponly=True, secure=not settings.DEBUG, samesite="Lax"
+            "access_token",
+            token["access_token"],
+            httponly=True,
+            secure=not settings.DEBUG,
+            samesite="Lax",
+            max_age=60 * 30,
         )
         return response
 
