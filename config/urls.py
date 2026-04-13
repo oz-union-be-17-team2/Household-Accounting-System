@@ -19,10 +19,18 @@ import debug_toolbar
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+
+def health_check(request):
+    """Docker health check 및 로드밸런서 상태 확인용 엔드포인트."""
+    return JsonResponse({"status": "ok"})
+
+
 urlpatterns = [
+    path("health/", health_check, name="health"),
     path("admin/", admin.site.urls),
     path("account/", include("app.account.urls")),
     path("user/", include("app.user.urls")),
