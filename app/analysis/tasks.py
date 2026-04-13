@@ -19,6 +19,14 @@ def analyze_weekly_task():
 
     for user in users:
         try:
+            if Analysis.objects.filter(
+                user=user,
+                analysis_type=Analysis.AnalysisType.WEEKLY,
+                period_start=period_start,
+                period_end=period_end,
+            ).exists():
+                continue
+
             analyzer = SpendingAnalyzer(
                 user=user,
                 period_start=period_start,
@@ -40,11 +48,19 @@ def analyze_monthly_task():
 
     for user in users:
         try:
+            if Analysis.objects.filter(
+                user=user,
+                analysis_type=Analysis.AnalysisType.MONTHLY,
+                period_start=period_start,
+                period_end=period_end,
+            ).exists():
+                continue
+
             analyzer = SpendingAnalyzer(
                 user=user,
                 period_start=period_start,
                 period_end=period_end,
-                analysis_type=Analysis.AnalysisType.MONTHLY,
+                analysis_type=Analysis.AnalysisType.WEEKLY,
             )
             analyzer.run()
         except ValueError:
