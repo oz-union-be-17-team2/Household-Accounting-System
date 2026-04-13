@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from app.account.exceptions import AccountNotFoundError
-from app.account.models import Account
+from app.account.models import Account, BalanceAlert
 from app.account.selectors import get_account_detail, get_account_list
 
 User = get_user_model()
@@ -51,6 +51,46 @@ def test_selectors_get_account_detail_fail(user):
         get_account_detail(user=user, account_pk=100)
 
     assert str(error.value) == "계좌를 찾을 수 없습니다."
+
+
+@pytest.mark.django_db
+class TestSelectorFilter:
+    def test_selectors_filter_account_type(self, user, account):
+        result = get_account_list(user=user, account_type=account.account_type)
+
+        assert result.count() == 1
+        assert result.first().account_type == Account.AccountType.CHECKING
+
+    def test_selectors_filter_bank_code(self, user, account):
+        result = get_account_list(user=user, bank_code=account.bank_code)
+
+        assert result.count() == 1
+        assert result.first().bank_code == Account.BankCode.KB
+
+
+@pytest.mark.django_db
+class TestSignals:
+    # 생성 검증
+    def test_balance_alert_created(self, user, account):
+        account.balance = 10_000_000
+        account.save()
+
+        assert BalanceAlert.objects.filter(account=account, threshold=10_000_000).exists()
+
+    # 1개만 생성되는지 검증
+    def test_balance_alert_not_duplicated(self, user, account):
+        account.balance = 10_000_000
+        account.save()
+        account.save()
+        account.save()
+
+        assert BalanceAlert.objects.filter(account=account, threshold=10_000_000).count() == 1
+
+    def test_no_alert_below_threshold(self, user, account):
+        account.balance = 5_000_000
+        account.save()
+
+        assert BalanceAlert.objects.filter(account=account, threshold=10_000_000).count() == 0
 
 
 # views test

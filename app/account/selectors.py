@@ -8,7 +8,7 @@ from app.account.models import Account
 User = get_user_model()
 
 
-def get_account_list(*, user: User, account_type: str | None, bank_code: str | None) -> QuerySet[Account]:
+def get_account_list(*, user: User, account_type: str | None = None, bank_code: str | None = None) -> QuerySet[Account]:
     if settings.DEBUG:
         account_list = Account.objects.all().select_related("user")
     else:

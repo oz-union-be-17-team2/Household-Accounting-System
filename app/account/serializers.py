@@ -1,3 +1,5 @@
+import re
+
 from rest_framework import serializers
 
 from app.account.models import Account
@@ -34,6 +36,11 @@ class AccountListSerializer(AccountSerializer):
 
 
 class AccountCreateSerializer(AccountSerializer):
+    def validate_number(self, value):
+        if not re.match(r"^[\d-]+$", value):
+            raise serializers.ValidationError("계좌번호는 숫자와 -만 입력 가능합니다.")
+        return value
+
     class Meta:
         model = Account
         fields = [

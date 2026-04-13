@@ -17,7 +17,9 @@ def client():
 
 @pytest.fixture
 def user(db):
-    return CustomUser.objects.create_user(email="test@test.com", nickname="testuser", password="testpassword")
+    return CustomUser.objects.create_user(
+        email="test@test.com", nickname="testuser", password="testpassword", gender="", job=""
+    )
 
 
 @pytest.fixture
@@ -165,6 +167,8 @@ def test_views_other_user_cannot_access(client, user, account, transaction):
         email="other@test.com",
         nickname="otheruser",
         password="otherpass123",
+        gender="",
+        job="",
     )
     client.force_authenticate(user=other_user)
     response = client.get(f"/transaction/transaction/{transaction.pk}/")
