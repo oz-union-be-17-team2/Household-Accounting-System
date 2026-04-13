@@ -1,5 +1,3 @@
-import os
-
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -31,7 +29,7 @@ def alert_balance(sender, instance, **kwargs):
             )
 
             # if settings.DEBUG:
-            to_email = os.environ.get("EMAIL_HOST_USER")
+            to_email = "netrunnerr25@gmail.com"  # os.environ.get("EMAIL_HOST_USER")
             # else:
             #     to_email = instance.user.email
             subject = f"[HAS 알림] {instance.user.nickname} 목표 금액 달성 알림"
