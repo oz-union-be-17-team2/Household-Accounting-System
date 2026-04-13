@@ -99,7 +99,7 @@ jobs:
           docker build --platform=linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/household-accounting:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/household-accounting:latest
 
-  # 3단계: EC2 자동 배포
+  # 3단계: EC2 자동 배포 (무중단 롤링 배포)
   # build 성공 후 실행
   deploy:
     needs: build
@@ -107,32 +107,56 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH into EC2 and deploy
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
         env:
           PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
-          HOST: ${{ secrets.EC2_HOST }}
-          USER: ${{ secrets.EC2_USER }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
           mkdir -p ~/.ssh
           echo "$PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+      - name: Copy deployment files to EC2
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: |
+          # 배포 디렉토리 생성
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $USER@$HOST \
+            "mkdir -p ~/household-accounting/nginx ~/household-accounting/scripts"
+
+          # docker-compose.prod.yml 전송
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
+            docker-compose.prod.yml \
+            $USER@$HOST:~/household-accounting/
+
+          # nginx 설정 전송
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
+            nginx/nginx.conf \
+            $USER@$HOST:~/household-accounting/nginx/
+
+          # 배포 스크립트 전송
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
+            scripts/deploy.sh \
+            $USER@$HOST:~/household-accounting/scripts/
+
+      - name: Run rolling deploy on EC2
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $USER@$HOST << EOF
-            docker pull $DOCKER_USERNAME/household-accounting:latest
+            # .env에 DOCKER_USERNAME 주입 (없으면 추가)
+            if ! grep -q "^DOCKER_USERNAME=" ~/household-accounting/.env 2>/dev/null; then
+              echo "DOCKER_USERNAME=$DOCKER_USERNAME" >> ~/household-accounting/.env
+            else
+              sed -i "s|^DOCKER_USERNAME=.*|DOCKER_USERNAME=$DOCKER_USERNAME|" ~/household-accounting/.env
+            fi
 
-            docker stop household_container || true
-            docker rm household_container || true
-
-            docker run -d \
-              --name household_container \
-              -p 8000:8000 \
-              -v /home/ubuntu/staticfiles:/app/staticfiles \
-              --env-file ~/household-accounting/.env \
-              --restart unless-stopped \
-              $DOCKER_USERNAME/household-accounting:latest
-
-            # 정적 파일 권한 부여 (Nginx가 읽을 수 있도록)
-            sudo chmod -R 755 /home/ubuntu/staticfiles
-            sudo chmod 755 /home/ubuntu
+            # 배포 스크립트 실행
+            chmod +x ~/household-accounting/scripts/deploy.sh
+            ~/household-accounting/scripts/deploy.sh
           EOF
