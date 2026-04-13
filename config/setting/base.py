@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,6 +35,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -93,9 +95,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Seoul"
 
 USE_I18N = True
 
@@ -106,12 +108,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 LOCAL_APPS = [
     "app.user",
     "app.account",
     "app.transaction",
     "app.notification",
+    "app.analysis",
 ]
 
 THIRD_PARTY_APPS = [
@@ -120,12 +127,21 @@ THIRD_PARTY_APPS = [
     # AUTH
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    "debug_toolbar",
+    "django_celery_beat",
+    "django_celery_results",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "app.user.authentication.CookieJWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
@@ -136,3 +152,41 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = "user.CustomUser"
+
+# 이메일 인증
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER")
+
+INTERNAL_IPS = ["127.0.0.1"]
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+CELERY_BEAT_SCHEDULE = {
+    "analyze-weekly": {
+        "task": "app.analysis.tasks.analyze_weekly_task",
+        "schedule": crontab(hour=0, minute=0, day_of_week=1),
+    },
+    "analyze-monthly": {
+        "task": "app.analysis.tasks.analyze_monthly_task",
+        "schedule": crontab(hour=0, minute=0, day_of_month=1),
+    },
+    "hard-delete-old-notification": {
+        "task": "app.notification.tasks.hard_delete_old_notification_task",
+        "schedule": crontab(hour=0, minute=0),
+    },
+}
+
+CELERY_BEAT_SCHEDULE = {
+    "analyze-weekly": {
+        "task": "app.analysis.tasks.analyze_weekly_task",
+        "schedule": 60.0,
+    },
+}

@@ -8,15 +8,28 @@ dependencies = [
     "django>=6.0.3",
     "djangorestframework>=3.17.1",
     "djangorestframework-simplejwt>=5.5.0",
+    "djangorestframework-stubs>=3.16.9",
     "drf-spectacular>=0.29.0",
     "gunicorn>=25.3.0",
     "psycopg2-binary>=2.9.11",
     "python-dotenv>=1.2.2",
+    # Analysis
+    "pandas>=2.2.0",
+    "matplotlib>=3.9.0",
+    "celery>=5.4.0",
+    "django-celery-beat>=2.7.0",
+    "django-celery-results>=2.5.0",
+    "redis>=5.0.0",
+    "Pillow>=11.0.0",
 ]
 
 [dependency-groups]
 dev = [
+    "coverage>=7.13.5",
+    "django-debug-toolbar>=6.3.0",
     "pre-commit>=4.5.1",
+    "pytest>=9.0.3",
+    "pytest-django>=4.12.0",
     "ruff>=0.15.9",
 ]
 prod = [
@@ -27,6 +40,7 @@ prod = [
 line-length = 120
 indent-width = 4
 target-version = "py313"
+exclude = ["*/migrations/*.py"]
 
 [tool.ruff.lint]
 select = [
@@ -44,3 +58,7 @@ fixable = ["ALL"]  # 모든 수정 가능한 문제 자동 수정
 
 [tool.ruff.format]
 quote-style = "double"  # black과 일치
+
+[tool.pytest.ini_options] #pytest를 위한 추가
+DJANGO_SETTINGS_MODULE = "config.setting.base"
+python_files = ["test_*.py", "tests.py"]

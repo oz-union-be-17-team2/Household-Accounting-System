@@ -30,10 +30,30 @@ class Account(TimeStampModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="accounts")
     name = models.CharField(max_length=20, default="통장")
     number = models.CharField(max_length=20, unique=True)
-    type = models.CharField(max_length=20, choices=AccountType.choices)
+    account_type = models.CharField(max_length=20, choices=AccountType.choices)
     bank_code = models.CharField(max_length=3, choices=BankCode.choices)
     is_active = models.BooleanField(default=True)
     balance = models.DecimalField(max_digits=20, decimal_places=0, default=0)
-    daily_transfer_limit = models.DecimalField(max_digits=10, decimal_places=0, default=30_000_000)
-    per_transaction_limit = models.DecimalField(max_digits=10, decimal_places=0, default=30_000_000)
-    monthly_transfer_limit = models.DecimalField(max_digits=10, decimal_places=0, default=1_000_000_000)
+
+    class Meta:
+        verbose_name = "계좌"
+        verbose_name_plural = f"{verbose_name} 목록"
+        ordering = ["name", "-updated_at"]
+
+    def __str__(self):
+        return f"{self.user.nickname} - {self.get_bank_code_display()} {self.number} {self.get_account_type_display()}"
+
+
+class BalanceAlert(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="balance_alerts")
+    threshold = models.DecimalField(max_digits=20, decimal_places=0, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "잔액 알림"
+        verbose_name_plural = f"{verbose_name} 목록"
+        ordering = ["-created_at"]
+        unique_together = ["account", "threshold"]
+
+    def __str__(self):
+        return f"{self.account.user.nickname}님의 {self.threshold}원 알림"
