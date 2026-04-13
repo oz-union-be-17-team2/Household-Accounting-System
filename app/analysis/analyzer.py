@@ -1,6 +1,9 @@
 import os
 from datetime import datetime, time
 
+import matplotlib
+
+matplotlib.use("Agg")  # GUI 없이 이미지 파일로만 저장 (웹서버/스레드 환경)
 import matplotlib.pyplot as plt
 import pandas as pd
 from django.conf import settings
