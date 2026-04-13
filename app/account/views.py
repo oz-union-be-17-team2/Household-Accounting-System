@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -20,6 +20,14 @@ class AccountListCreateAPIView(APIView):
     @extend_schema(
         summary="계좌 목록 조회",
         description="계좌 목록 조회 및 페이지네이션",
+        parameters=[
+            OpenApiParameter(name="account_type", description="계좌 유형 (CHECKING/SAVINGS/DEPOSIT/OVERDRAFT/LOAN)"),
+            OpenApiParameter(
+                name="bank_code",
+                description="은행 코드 (004:KB, 088:SHINHAN, 020:WOORI, 081:HANA, 011:NH, "
+                "003:IBK, 023:SC, 027:CITI, 032:BUSAN, 031:DAEGU, 090:KAKAO, 092:TOSS, 089:K)",
+            ),
+        ],
         responses={200: AccountListSerializer},
     )
     def get(self, request):
@@ -35,7 +43,8 @@ class AccountListCreateAPIView(APIView):
 
     @extend_schema(
         summary="계좌 생성",
-        description="계좌번호, 계좌 종류, 은행, 잔액 입력 필요",
+        description="계좌 유형 (CHECKING/SAVINGS/DEPOSIT/OVERDRAFT/LOAN)\n\n"
+        "은행 코드 (004:KB, 088:SHINHAN, 020:WOORI, ...)",
         request=AccountCreateSerializer,
         responses={201: AccountCreateSerializer},
     )

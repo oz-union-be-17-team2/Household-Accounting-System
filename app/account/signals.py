@@ -1,8 +1,11 @@
+import os
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from app.account.models import Account, BalanceAlert
 from app.notification.models import Notification
+from core.utils import send_email
 
 THRESHOLDS = sorted(
     [
@@ -26,6 +29,15 @@ def alert_balance(sender, instance, **kwargs):
                 message=f"[알림]{instance.user.nickname}님의 {instance.name}의 잔액이 "
                 f"{threshold}원이 넘었습니다. 축하합니다.",
             )
-            print(
-                f"[알림] {instance.user.nickname}님의 {instance.name}의 잔액이 {threshold}원이 넘었습니다. 축하합니다."
+
+            # if settings.DEBUG:
+            to_email = os.environ.get("EMAIL_HOST_USER")
+            # else:
+            #     to_email = instance.user.email
+            subject = f"[HAS 알림] {instance.user.nickname} 목표 금액 달성 알림"
+            message = (
+                f"<div><strong>{instance.user.nickname}</strong>님의 <br>"
+                f'"{instance.name}"통장의 잔액이 {threshold}원을 돌파하였습니다. 축하합니다.</div>'
             )
+
+            send_email(subject, message, to_email)
