@@ -131,4 +131,8 @@ jobs:
               --env-file ~/household-accounting/.env \
               --restart unless-stopped \
               $DOCKER_USERNAME/household-accounting:latest
+
+            # 정적 파일 권한 부여 (Nginx가 읽을 수 있도록)
+            sudo chmod -R 755 /home/ubuntu/staticfiles
+            sudo chmod 755 /home/ubuntu
           EOF
