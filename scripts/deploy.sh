@@ -1,8 +1,7 @@
 #!/bin/bash
 # ============================================================
-# Zero-Downtime Rolling Deploy Script
+# Deploy Script
 # 실행 위치: EC2 서버
-# 전략: web1 → web2 순서로 순차 재시작 (무중단 배포)
 # ============================================================
 set -e
 
@@ -19,57 +18,26 @@ fi
 cd "$DEPLOY_DIR"
 
 echo "======================================"
-echo " Rolling Deploy 시작"
+echo " Deploy 시작"
 echo "======================================"
 
 echo ""
-echo "[1/5] 최신 이미지 Pull..."
-docker compose -f "$COMPOSE_FILE" pull web1 web2
+echo "[1/4] 최신 이미지 Pull..."
+docker compose -f "$COMPOSE_FILE" pull web
 
 echo ""
-echo "[2/5] Redis 및 공통 서비스 기동..."
+echo "[2/4] Redis 기동..."
 docker compose -f "$COMPOSE_FILE" up -d redis
 
 echo ""
-echo "[2.5/5] DB 마이그레이션 및 정적 파일 수집 (1회만 실행)..."
+echo "[3/4] DB 마이그레이션 및 정적 파일 수집..."
 docker compose -f "$COMPOSE_FILE" run --rm \
     -e DJANGO_SETTINGS_MODULE=config.setting.prod \
-    web1 sh -c "uv run python manage.py migrate && uv run python manage.py collectstatic --noinput"
+    web sh -c "uv run python manage.py migrate && uv run python manage.py collectstatic --noinput"
 
 echo ""
-echo "[3/5] web1 롤링 재시작 (web2가 트래픽 처리)..."
-docker compose -f "$COMPOSE_FILE" up -d --no-deps --force-recreate web1
-
-echo "  web1 health check 대기 중 (최대 60s)..."
-for i in $(seq 1 12); do
-    STATUS=$(docker inspect --format='{{.State.Health.Status}}' \
-        "$(docker compose -f "$COMPOSE_FILE" ps -q web1)" 2>/dev/null || echo "starting")
-    if [ "$STATUS" = "healthy" ]; then
-        echo "  web1 healthy!"
-        break
-    fi
-    echo "  ($((i * 5))s) 상태: $STATUS..."
-    sleep 5
-done
-
-echo ""
-echo "[4/5] web2 롤링 재시작 (web1이 트래픽 처리)..."
-docker compose -f "$COMPOSE_FILE" up -d --no-deps --force-recreate web2
-
-echo "  web2 health check 대기 중 (최대 60s)..."
-for i in $(seq 1 12); do
-    STATUS=$(docker inspect --format='{{.State.Health.Status}}' \
-        "$(docker compose -f "$COMPOSE_FILE" ps -q web2)" 2>/dev/null || echo "starting")
-    if [ "$STATUS" = "healthy" ]; then
-        echo "  web2 healthy!"
-        break
-    fi
-    echo "  ($((i * 5))s) 상태: $STATUS..."
-    sleep 5
-done
-
-echo ""
-echo "[5/5] Nginx 기동 (두 웹 서버 모두 healthy)..."
+echo "[4/4] web 및 nginx 기동..."
+docker compose -f "$COMPOSE_FILE" up -d --no-deps --force-recreate web
 docker compose -f "$COMPOSE_FILE" up -d --no-deps nginx
 
 echo ""
