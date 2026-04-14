@@ -33,7 +33,7 @@ echo ""
 echo "[3/4] DB 마이그레이션 및 정적 파일 수집..."
 docker compose -f "$COMPOSE_FILE" run --rm \
     -e DJANGO_SETTINGS_MODULE=config.setting.prod \
-    web sh -c "uv run python manage.py migrate && uv run python manage.py collectstatic --noinput"
+    web sh -c "uv run --no-dev python manage.py migrate && uv run --no-dev python manage.py collectstatic --noinput"
 
 echo ""
 echo "[4/4] web 및 nginx 기동..."
