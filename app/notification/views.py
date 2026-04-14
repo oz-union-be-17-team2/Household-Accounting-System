@@ -1,4 +1,3 @@
-from django.conf import settings
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -14,8 +13,7 @@ from app.notification.services import (
 
 
 class NotificationListAPIView(APIView):
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="알림 목록 조회",
@@ -29,8 +27,7 @@ class NotificationListAPIView(APIView):
 
 
 class NotificationDetailAPIView(APIView):
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="알림 디테일 조회",

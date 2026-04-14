@@ -14,8 +14,7 @@ User = get_user_model()
 
 
 class AccountListCreateAPIView(APIView):
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="계좌 목록 조회",
@@ -59,8 +58,7 @@ class AccountListCreateAPIView(APIView):
 
 
 class AccountDetailAPIView(APIView):
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         summary="계좌 상세정보 조회", description="계좌 상세정보 조회", responses={200: AccountDetailSerializer}
