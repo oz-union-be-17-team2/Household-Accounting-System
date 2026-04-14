@@ -13,9 +13,10 @@ from app.transaction.models import Transaction
 
 from .models import Analysis
 
-# Matplotlib은 기본적으로 영어 폰트만 지원한다. 한글을 차트에 표시하려면
-# 한글 폰트를 지정해줘야하는데 AppleGothic은 macOS에 기본으로 설치된 한글 폰트이다
-plt.rcParams["font.family"] = "AppleGothic"
+# Matplotlib 한글 폰트 설정
+# NanumGothic: Linux 서버(Docker)에서 사용 가능한 한글 폰트
+# AppleGothic은 macOS 전용이라 서버에서 사용 불가
+plt.rcParams["font.family"] = "NanumGothic"
 # 한글 폰트로 바꾸면 -기호가 깨지는 문제가 발생하는데 그것을 방지하는 설정이다
 plt.rcParams["axes.unicode_minus"] = False
 

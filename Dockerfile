@@ -6,8 +6,8 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PATH="/root/.local/bin:/root/.cargo/bin:${PATH}"
 
-# 필수 패키지 설치
-RUN apt-get update && apt-get install -y curl build-essential libpq-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
+# 필수 패키지 설치 (fonts-nanum: 한글 폰트)
+RUN apt-get update && apt-get install -y curl build-essential libpq-dev fonts-nanum && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # uv 설치
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
